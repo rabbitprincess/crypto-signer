@@ -21,18 +21,18 @@ func NewFileStore(root string, log zerolog.Logger) *FileStore {
 	}
 }
 
-func (s *FileStore) Get(key string) (val []byte, err error) {
-	return afero.ReadFile(afero.NewOsFs(), s.path(key))
+func (s *FileStore) Get(path, key string) (val []byte, err error) {
+	return afero.ReadFile(afero.NewOsFs(), s.path(path, key))
 }
 
-func (s *FileStore) Set(key string, val []byte) error {
-	return afero.WriteFile(afero.NewOsFs(), s.path(key), val, 0644)
+func (s *FileStore) Set(path, key string, val []byte) error {
+	return afero.WriteFile(afero.NewOsFs(), s.path(path, key), val, 0644)
 }
 
-func (s *FileStore) Delete(key string) error {
-	return s.osfs.RemoveAll(s.path(key))
+func (s *FileStore) Delete(path, key string) error {
+	return s.osfs.RemoveAll(s.path(path, key))
 }
 
-func (s *FileStore) path(key string) string {
-	return s.root + "/" + key
+func (s *FileStore) path(path, key string) string {
+	return s.root + path + "/" + key
 }

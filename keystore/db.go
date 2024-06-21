@@ -25,8 +25,8 @@ func NewDbStore(root string, log zerolog.Logger) *DbStore {
 	}
 }
 
-func (s *DbStore) Get(key string) (val []byte, err error) {
-	val, closer, err := s.db.Get([]byte(key))
+func (s *DbStore) Get(path, key string) (val []byte, err error) {
+	val, closer, err := s.db.Get(s.makePathKey(path, key))
 	defer closer.Close()
 	if err != nil {
 		return nil, err
@@ -34,10 +34,18 @@ func (s *DbStore) Get(key string) (val []byte, err error) {
 	return val, nil
 }
 
-func (s *DbStore) Set(key string, val []byte) error {
-	return s.db.Set([]byte(key), val, pebble.Sync)
+func (s *DbStore) Set(path, key string, val []byte) error {
+	return s.db.Set(s.makePathKey(path, key), val, pebble.Sync)
 }
 
-func (s *DbStore) Delete(key string) error {
-	return s.db.Delete([]byte(key), pebble.Sync)
+func (s *DbStore) Delete(path, key string) error {
+	return s.db.Delete(s.makePathKey(path, key), pebble.Sync)
+}
+
+func (s *DbStore) Close() error {
+	return s.db.Close()
+}
+
+func (s *DbStore) makePathKey(path, key string) []byte {
+	return []byte(path + "/" + key)
 }
