@@ -5,6 +5,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
+var _ KeyStore = (*DbStore)(nil)
+
 type DbStore struct {
 	logger zerolog.Logger
 	db     *pebble.DB
